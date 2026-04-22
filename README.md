@@ -1,10 +1,11 @@
 # DJI Action DB Merge Tool
 
-A C# / WPF tool for merging DJI Action camera SQLite databases (`ACxxx.db`), typically found at `/MISC/ACxxx.db` on DJI storage cards.
+A C# / Avalonia tool for merging DJI Action camera SQLite databases (`ACxxx.db`), typically found at `/MISC/ACxxx.db` on DJI storage cards.  
+Runs on **Windows, macOS, and Linux**. Supports **NativeAOT** publishing for a self-contained, fast-startup binary.
 
 ## Features
 
-- **GUI mode** – drag-and-drop-friendly file pickers, a progress bar, and a live log.
+- **GUI mode** – file pickers, a progress bar, and a live log.
 - **CLI mode** – run headless from a terminal or batch script.
 - Correct merge order with automatic **foreign-key remapping**:
   - `video_info_table` and `image_info_table` are migrated first, generating old→new ID maps.
@@ -14,8 +15,7 @@ A C# / WPF tool for merging DJI Action camera SQLite databases (`ACxxx.db`), typ
 
 ## Requirements
 
-- Windows (WPF)
-- [.NET 8 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 10 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) (or use a NativeAOT published binary – no runtime required)
 
 ## Build
 
@@ -23,16 +23,26 @@ A C# / WPF tool for merging DJI Action camera SQLite databases (`ACxxx.db`), typ
 dotnet build DjiActionDbMergeTool.slnx
 ```
 
+## Publish (NativeAOT self-contained)
+
+```bash
+dotnet publish src/DjiActionDbMergeTool/DjiActionDbMergeTool.csproj \
+  -r <rid> -c Release
+# e.g. -r win-x64, linux-x64, osx-arm64
+```
+
+The published binary in `bin/Release/net10.0/<rid>/publish/` requires no .NET runtime installed.
+
 ## Usage
 
 ### GUI
 
-Double-click `DjiActionDbMergeTool.exe` (or `dotnet run` from the project folder), select the **Source** and **Target** databases, then click **Merge**.
+Double-click `DjiActionDbMergeTool` (or run `dotnet run`), select the **Source** and **Target** databases, then click **Merge**.
 
 ### CLI
 
 ```
-DjiActionDbMergeTool.exe --source <path-to-source.db> --target <path-to-target.db>
+DjiActionDbMergeTool --source <path-to-source.db> --target <path-to-target.db>
 ```
 
 | Argument | Description |
