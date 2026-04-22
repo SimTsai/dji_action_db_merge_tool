@@ -15,6 +15,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        Title = $"DJI Action DB Merge Tool v{Program.AppVersion}";
     }
 
     private async void BrowseSource_Click(object? sender, RoutedEventArgs e)

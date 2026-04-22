@@ -9,6 +9,7 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>false</InvariantGlobalization>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,3 +1,4 @@
+using System.Reflection;
 using Avalonia;
 using DjiActionDbMergeTool.Core;
 
@@ -5,12 +6,24 @@ namespace DjiActionDbMergeTool;
 
 class Program
 {
+    internal static readonly string AppVersion =
+        typeof(Program).Assembly
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+            ?.InformationalVersion ?? "unknown";
+
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
     [STAThread]
     public static int Main(string[] args)
     {
+        // --version flag
+        if (args.Contains("--version"))
+        {
+            Console.WriteLine($"DjiActionDbMergeTool v{AppVersion}");
+            return 0;
+        }
+
         // CLI mode: detect --source / --target before starting Avalonia
         string? source = null;
         string? target = null;
