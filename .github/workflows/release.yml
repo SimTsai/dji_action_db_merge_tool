@@ -25,10 +25,10 @@ jobs:
             rid: linux-x64
             artifact: DjiActionDbMergeTool-linux-x64
             exe: DjiActionDbMergeTool
-          - os: ubuntu-latest
-            rid: linux-arm64
-            artifact: DjiActionDbMergeTool-linux-arm64
-            exe: DjiActionDbMergeTool
+          #- os: ubuntu-latest
+          #  rid: linux-arm64
+          #  artifact: DjiActionDbMergeTool-linux-arm64
+          #  exe: DjiActionDbMergeTool
 
     steps:
       - name: Checkout
