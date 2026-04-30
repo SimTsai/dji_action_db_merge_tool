@@ -37,7 +37,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '9.0.x'
 
       - name: Install Linux build dependencies (x64)
         if: matrix.rid == 'linux-x64'
@@ -64,13 +64,13 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $src = "src/DjiActionDbMergeTool/bin/Release/net10.0/${{ matrix.rid }}/publish/${{ matrix.exe }}"
+          $src = "src/DjiActionDbMergeTool/bin/Release/net9.0/${{ matrix.rid }}/publish/${{ matrix.exe }}"
           Copy-Item $src "${{ matrix.artifact }}"
 
       - name: Stage artifact (Linux)
         if: runner.os == 'Linux'
         run: |
-          cp "src/DjiActionDbMergeTool/bin/Release/net10.0/${{ matrix.rid }}/publish/${{ matrix.exe }}" \
+          cp "src/DjiActionDbMergeTool/bin/Release/net9.0/${{ matrix.rid }}/publish/${{ matrix.exe }}" \
              "${{ matrix.artifact }}"
           chmod +x "${{ matrix.artifact }}"
 
