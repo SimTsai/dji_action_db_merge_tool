@@ -19,16 +19,10 @@ jobs:
         include:
           - os: windows-latest
             rid: win-x64
-            artifact: DjiActionDbMergeTool-win-x64.exe
-            exe: DjiActionDbMergeTool.exe
           - os: ubuntu-latest
             rid: linux-x64
-            artifact: DjiActionDbMergeTool-linux-x64
-            exe: DjiActionDbMergeTool
           #- os: ubuntu-latest
           #  rid: linux-arm64
-          #  artifact: DjiActionDbMergeTool-linux-arm64
-          #  exe: DjiActionDbMergeTool
 
     steps:
       - name: Checkout
@@ -58,27 +52,44 @@ jobs:
           dotnet publish src/DjiActionDbMergeTool/DjiActionDbMergeTool.csproj
           -r ${{ matrix.rid }}
           -c Release
-          --self-contained
+          -f net10.0
 
-      - name: Stage artifact (Windows)
-        if: runner.os == 'Windows'
+      - name: Prepare artifact metadata
+        id: artifact_vars
         shell: pwsh
         run: |
-          $src = "src/DjiActionDbMergeTool/bin/Release/net10.0/${{ matrix.rid }}/publish/${{ matrix.exe }}"
-          Copy-Item $src "${{ matrix.artifact }}"
+          $tagVersion = "${{ github.ref_name }}"
 
-      - name: Stage artifact (Linux)
-        if: runner.os == 'Linux'
+          $publishDir = "src/DjiActionDbMergeTool/bin/Release/net10.0/${{ matrix.rid }}/publish"
+          $artifactName = "DjiActionDbMergeTool-$tagVersion-${{ matrix.rid }}.zip"
+
+          "publish_dir=$publishDir" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "artifact_name=$artifactName" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Stage artifact
+        shell: pwsh
         run: |
-          cp "src/DjiActionDbMergeTool/bin/Release/net10.0/${{ matrix.rid }}/publish/${{ matrix.exe }}" \
-             "${{ matrix.artifact }}"
-          chmod +x "${{ matrix.artifact }}"
+          $publishDir = "${{ steps.artifact_vars.outputs.publish_dir }}"
+          $artifactPath = Join-Path $env:GITHUB_WORKSPACE "${{ steps.artifact_vars.outputs.artifact_name }}"
+
+          Push-Location $publishDir
+          try {
+            $files = Get-ChildItem -File -Recurse | Where-Object { $_.Extension -ne '.pdb' } | ForEach-Object { $_.FullName.Substring($pwd.Path.Length + 1) }
+            if ($files.Count -eq 0) {
+              throw "No files found to package (excluding .pdb)."
+            }
+
+            Compress-Archive -Path $files -DestinationPath $artifactPath -Force
+          }
+          finally {
+            Pop-Location
+          }
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.rid }}
-          path: ${{ matrix.artifact }}
+          path: ${{ steps.artifact_vars.outputs.artifact_name }}
           if-no-files-found: error
 
   release:
