@@ -21,10 +21,12 @@ jobs:
             rid: win-x64
             artifact: DjiActionDbMergeTool-win-x64.exe
             exe: DjiActionDbMergeTool.exe
+            publish_args: --self-contained -p:PublishAot=false -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
           - os: ubuntu-latest
             rid: linux-x64
             artifact: DjiActionDbMergeTool-linux-x64
             exe: DjiActionDbMergeTool
+            publish_args: --self-contained
           #- os: ubuntu-latest
           #  rid: linux-arm64
           #  artifact: DjiActionDbMergeTool-linux-arm64
@@ -58,7 +60,7 @@ jobs:
           dotnet publish src/DjiActionDbMergeTool/DjiActionDbMergeTool.csproj
           -r ${{ matrix.rid }}
           -c Release
-          --self-contained
+          ${{ matrix.publish_args }}
 
       - name: Stage artifact (Windows)
         if: runner.os == 'Windows'
